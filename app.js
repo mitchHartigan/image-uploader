@@ -14,22 +14,31 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 
+function base64Encode(imgPath) {
+  return `data:image/png;base64,${fs.readFileSync(imgPath, "base64")}`;
+}
+
 async function main() {
   const client = new MongoClient(dbUrl);
   await client.connect();
   const collection = client.db("mortgagebanking").collection("articles");
+  var updatedArticles = [];
 
   (async () => {
     collection.find({}).toArray(async (err, storedDatabaseArticles) => {
       if (err) console.log(err);
 
       storedDatabaseArticles.forEach((article) => {
+        const name = article.name;
+
         const updatedArticle = {
           ...article,
-          imgSm: "",
-          imgMd: "",
-          imgLg: "",
+          imgSm: base64Encode(`./public/${name}_sm.png`),
+          imgMd: base64Encode(`./public/${name}_md.png`),
+          imgLg: base64Encode(`./public/${name}_lg.png`),
         };
+        delete updatedArticle._id;
+        updatedArticles.push(updatedArticle);
       });
 
       const files = await fs.promises.readdir("./public");
@@ -45,6 +54,8 @@ async function main() {
 
       // parses the array for duplicates.
       console.log([...new Set(newFiles)]);
+      console.log(updatedArticles);
+      fs.writeFileSync("articles.json", JSON.stringify(updatedArticles));
     });
   })();
 }
