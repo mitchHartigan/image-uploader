@@ -4,7 +4,6 @@ const { MongoClient } = require("mongodb");
 const express = require("express");
 const cors = require("cors");
 const fs = require("fs");
-const path = require("path");
 
 const dbUrl = `mongodb+srv://admin:bjX2dGUEnrK4Zyd@cluster0.vl3pn.mongodb.net/food?retryWrites=true&w=majority`;
 
@@ -18,16 +17,19 @@ function base64Encode(imgPath) {
   return `data:image/png;base64,${fs.readFileSync(imgPath, "base64")}`;
 }
 
-async function main() {
+// Query the articles array from the database. Create a new object for each article,
+// deleting the existing _id, and overriding the imgSm, imgMd, imgLg properties.
+(async () => {
+  var updatedArticles = [];
+
   const client = new MongoClient(dbUrl);
   await client.connect();
   const collection = client.db("mortgagebanking").collection("articles");
-  var updatedArticles = [];
 
-  (async () => {
-    collection.find({}).toArray(async (err, storedDatabaseArticles) => {
-      if (err) console.log(err);
+  collection.find({}).toArray(async (err, storedDatabaseArticles) => {
+    if (err) console.log("database error:", err);
 
+    try {
       storedDatabaseArticles.forEach((article) => {
         const name = article.name;
 
@@ -37,32 +39,18 @@ async function main() {
           imgMd: base64Encode(`./public/${name}_md.png`),
           imgLg: base64Encode(`./public/${name}_lg.png`),
         };
+
         delete updatedArticle._id;
         updatedArticles.push(updatedArticle);
       });
 
-      const files = await fs.promises.readdir("./public");
-
-      var newFiles = [];
-      files.forEach((filename) => {
-        let splitString = filename.split("_");
-        const slicedName = splitString[0];
-        newFiles.push(slicedName);
-      });
-
-      const imageNames = [...new Set(newFiles)];
-
-      // parses the array for duplicates.
-      console.log([...new Set(newFiles)]);
-      console.log(updatedArticles);
+      // write the new json Array to articles.json locally. If articles.json
+      // does not exist, writeFileSync will create it and write to it.
       fs.writeFileSync("articles.json", JSON.stringify(updatedArticles));
-    });
-  })();
-}
-
-main();
-
-const port = process.env.port || 3000;
-app.listen(port, () => {
-  console.log(`server running on port ${port}`);
-});
+      console.log("Generated base64 images for each article in the database.");
+    } catch (err) {
+      console.log("Failed to generate. Check error:");
+      console.log(err);
+    }
+  });
+})();
