@@ -14,8 +14,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 
-// Query the articles array from the database. Create a new object for each article,
-// deleting the existing _id, and overriding the imgSm, imgMd, imgLg properties.
+// Tutorial: https://mongodb.github.io/node-mongodb-native/3.0/tutorials/gridfs/streaming/
 (async () => {
   mongodb.MongoClient.connect(dbUrl, (err, client) => {
     if (err) console.log(err);
@@ -30,12 +29,11 @@ app.use(cors());
       .openDownloadStreamByName(
         "./public/attention-hmda-filers-you-need-a-lei_lg.png"
       )
-      .pipe(fs.createWriteStream("./downloaded_file.png"))
+      .pipe(fs.createWriteStream("./public/downloaded_file.png"))
       .on("error", (err) => {
         console.log(err);
       })
       .on("finish", () => {
-        console.log("donearino!");
         process.exit(0);
       });
   });
