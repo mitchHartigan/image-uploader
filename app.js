@@ -31,16 +31,22 @@ function base64Encode(imgPath) {
 
     try {
       storedDatabaseArticles.forEach((article) => {
-        const name = article.name;
+        // const name = article.name;
 
         const updatedArticle = {
           ...article,
-          imgSm: base64Encode(`./public/${name}_sm.png`),
-          imgMd: base64Encode(`./public/${name}_md.png`),
-          imgLg: base64Encode(`./public/${name}_lg.png`),
+          // imgSm: base64Encode(`./public/${name}_sm.png`),
+          // imgMd: base64Encode(`./public/${name}_md.png`),
+          // imgLg: base64Encode(`./public/${name}_lg.png`),
         };
 
         delete updatedArticle._id;
+        delete updatedArticle.imgSm;
+        delete updatedArticle.imgMd;
+        delete updatedArticle.imgLg;
+
+        console.log("updated article", updatedArticle);
+
         updatedArticles.push(updatedArticle);
       });
 
