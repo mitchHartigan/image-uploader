@@ -9,18 +9,30 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 
-const { UPLOAD, DOWNLOAD, FETCH_ARTICLES } = require("./API");
-const { getNamesFromImages, getNamesFromDatabase } = require("./utils");
+const {
+  UPLOAD,
+  DOWNLOAD,
+  FETCH_ARTICLES,
+  FETCH_IMG_METADATA,
+} = require("./API");
+const {
+  getNamesFromImgFolder,
+  getNamesFromDatabase,
+  getNamesFromDBImgMetadata,
+  removePublicPrefix,
+  compareLocalImgNamesToDB,
+  findMissingLocalImages,
+} = require("./utils");
 // Query the articles array from the database. Create a new object for each article,
 // deleting the existing _id, and overriding the imgSm, imgMd, imgLg properties.
 
 const main = async () => {
-  const articles = await FETCH_ARTICLES();
-  const datbaseNames = getNamesFromDatabase(articles);
-  const imageNames = getNamesFromImages("./public");
+  const dbImages = await FETCH_IMG_METADATA();
 
-  console.log(datbaseNames);
-  console.log(imageNames);
+  const dbImgNames = await getNamesFromDBImgMetadata(dbImages);
+  const localImgNames = await getNamesFromImgFolder("./public");
+
+  findMissingLocalImages(localImgNames, dbImgNames);
 };
 
 app.get("/", (req, res) => {
