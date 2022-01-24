@@ -1,6 +1,5 @@
-const res = require("express/lib/response");
 const fs = require("fs");
-const { resolve } = require("path");
+const { DOWNLOAD, UPLOAD } = require("./API");
 
 const getNamesFromDatabase = (articles) => {
   let articleNames = [];
@@ -40,6 +39,10 @@ const removePublicPrefix = (fullPath) => {
   return fullPath.split("/")[2];
 };
 
+const addPublicPrefix = (fileName) => {
+  return `./public/${fileName}`;
+};
+
 const findMissingLocalImages = (localNames, dbNames) => {
   let missingLocalNames = [];
   let accountedForLocalNames = [];
@@ -54,10 +57,52 @@ const findMissingLocalImages = (localNames, dbNames) => {
   return missingLocalNames;
 };
 
+const findMissingDBImages = (localNames, dbNames) => {
+  let missingDBNames = [];
+  let accountedForDBNames = [];
+
+  dbNames.forEach((dbName) => {
+    localNames.forEach((localName) => {
+      if (dbName === localName) accountedForDBNames.push(localName);
+      else missingDBNames.push(localName);
+    });
+  });
+
+  return missingDBNames;
+};
+
+const syncLocalImages = (missingImageNames) => {
+  missingImageNames.forEach(async (imgName) => {
+    try {
+      const fullImgPath = addPublicPrefix(imgName);
+      await DOWNLOAD(fullImgPath, fullImgPath);
+    } catch (err) {
+      console.log(err);
+    }
+  });
+
+  console.log("Finished syncing images.");
+};
+
+const syncDBImages = (missingImageNames) => {
+  missingImageNames.forEach(async (imgName) => {
+    try {
+      const fullImgPath = addPublicPrefix(imgName);
+      await UPLOAD(fullImgPath, fullImgPath);
+    } catch (err) {
+      console.log(err);
+    }
+  });
+};
+
 module.exports = {
   getNamesFromDatabase,
   getNamesFromImgFolder,
   getNamesFromDBImgMetadata,
+  addPublicPrefix,
   removePublicPrefix,
+  syncLocalImages,
+  syncDBImages,
   findMissingLocalImages,
+  findMissingDBImages,
 };

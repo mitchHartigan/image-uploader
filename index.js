@@ -22,6 +22,9 @@ const {
   removePublicPrefix,
   compareLocalImgNamesToDB,
   findMissingLocalImages,
+  findMissingDBImages,
+  syncLocalImages,
+  syncDBImages,
 } = require("./utils");
 // Query the articles array from the database. Create a new object for each article,
 // deleting the existing _id, and overriding the imgSm, imgMd, imgLg properties.
@@ -32,7 +35,16 @@ const main = async () => {
   const dbImgNames = await getNamesFromDBImgMetadata(dbImages);
   const localImgNames = await getNamesFromImgFolder("./public");
 
-  findMissingLocalImages(localImgNames, dbImgNames);
+  const unSyncedLocalImages = findMissingLocalImages(localImgNames, dbImgNames);
+  const unSyncedDBImages = findMissingDBImages(localImgNames, dbImgNames);
+
+  if (unSyncedLocalImages) {
+    syncLocalImages(unSyncedLocalImages);
+  }
+
+  if (unSyncedDBImages) {
+    syncDBImages(unSyncedDBImages);
+  }
 };
 
 app.get("/", (req, res) => {
