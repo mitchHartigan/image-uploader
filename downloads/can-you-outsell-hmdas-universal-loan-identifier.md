@@ -1,0 +1,19 @@
+Will HMDA's 23 character ULI handle production when the ULI can never be reused in the future? What if 18 characters are taken up by a non-consumer identifying substitute for the MERS ID, leaving only five? What happens when we add branch identifiers? We did the math. Your sales team has room to grow.
+
+Recently we have repeatedly been asked if there is enough space to create unique loan id numbers for the foreseeable future. HMDA changes will require financial institutions making covered loans to create Universal Loan Identifiers ("ULI") that are never reused. The 45 character ULI is composed of a unique Legal Entity Identifier ("LEI"), more info on getting a LEI here, which will precede the 23 character loan identifier and be followed by a two character check digit. If you are concerned that the ULI will not handle your future production, here is what you need to know:
+
+1. **The 23 characters are all yours.** The LEI precedes the 23 character loan identifier so financial institutions do not have to worry about using the same number as another financial institution.
+
+2. **ULI vs MERS Identifier.** The ULI uses alphanumeric characters, including the 26 letters of the alphabet (A-Z) not case sensitive, and 10 digits (0-9). That is 36 possible values for each character in the sequence. By comparison, the current MERS loan identifier is 18 characters, the first seven are the organization identifier, followed by a ten character loan identifier and then a single character check digit. So MERS gives companies only 10 digits to work with.
+
+3. **Exponential math in a nutshell.** When you have multiple place holders with multiple possibilities in each place you determine the total possible outcomes by multiplying the number of possibilities times itself for the number of positions in the sequence. For example in dice, with two six sided die, you have six times six or 36 possibilities. This is because for each number on the first die, there are six possible outcomes on the second die. If you add a third die there are another six times the possible outcomes. Mathematicians use the power to indicate how many times a number is multiplied by itself. For example 6^2 also known as six squared is equal to 6 x 6 or 36. Similarly 6^3 is equal to 6 x 6 x 6 or 216.
+
+4. **Branch Identifiers take up space.** But you can have up to 1,679,616 (that's 36^4) unique branch identifiers and only take up four characters leaving you 36^19 possible loan numbers.
+
+5. **Unique over time.** By now you may be asking how long will these numbers last, they have to be unique over time (once used, forever banned). The MERS number cannot be directly embeded in the ULI because it is included on the recorded instrument and could make the consumer identifiable. As a result, you get 36^23 unique possibilities. That is enough for 3.71 sextillion loans per year for a hundred million years while still preserving over 1.6 million unique branch codes.
+
+6. **Embedding the MERS Id.** If you embed the full MERS number in the 23 digits available for the ULI you will be able to reuse the same MERS number over 120 million times. That is because you can place the MERS number at the beginning and have the last five characters each with 36 possibilities resulting in 36^5 or place the MERS number at the end preceded by the first five numbers that have another 36^5 possibilities. The total is not 36^10 it is only 2 x 36^5 but that still comes close to 121 million possibilities.
+
+7. **Better MERS embedding.** By moving a branch id outside the MERS number and providing for only 46,656 branches (using three characters) creditors could still make ten billion loans (MERS digits are numeric so it provides a mere 10^10) per year for 1,296 years (36^2) using the last two ULI characters to establish a unique year identifier.
+
+If your sales team needs a new mantra try out, "Dwarf the ULI."
