@@ -41,18 +41,19 @@ function base64Encode(imgPath) {
         };
 
         delete updatedArticle._id;
-        delete updatedArticle.imgSm;
-        delete updatedArticle.imgMd;
-        delete updatedArticle.imgLg;
+        delete updatedArticle.content;
+        // delete updatedArticle.imgSm;
+        // delete updatedArticle.imgMd;
+        // delete updatedArticle.imgLg;
 
-        console.log("updated article", updatedArticle);
+        // console.log("updated article", updatedArticle);
 
         updatedArticles.push(updatedArticle);
       });
 
       // write the new json Array to articles.json locally. If articles.json
       // does not exist, writeFileSync will create it and write to it.
-      fs.writeFileSync("articles.json", JSON.stringify(updatedArticles));
+      fs.writeFileSync("articleMetadata.json", JSON.stringify(updatedArticles));
       console.log("Generated base64 images for each article in the database.");
     } catch (err) {
       console.log("Failed to generate. Check error:");
